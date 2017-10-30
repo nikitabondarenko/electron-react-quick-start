@@ -1,6 +1,6 @@
 import React from 'react';
 import {Editor, EditorState} from 'draft-js';
-// import AppStyle from '../styles/application';
+import AppStyle from '../styles/application';
 
 export default class App extends React.Component {
   constructor(props){
@@ -14,7 +14,7 @@ export default class App extends React.Component {
     return (
       <div id='content'>
         <h1>Draft.js Editor</h1>
-        {/* <AppStyle /> */}
+        <AppStyle />
         <div className='editor'>
           <Editor
             editorState={this.state.editorState}
