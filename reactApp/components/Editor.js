@@ -1,5 +1,5 @@
 var React = require('react');
-import {Editor, EditorState} from 'draft-js';
+import {Editor, EditorState,RichUtils} from 'draft-js';
 //import TextToolBox from './TextToolBox';
 import editorStyles from '../styles/editorStyles';
 
@@ -12,6 +12,12 @@ class MyEditor extends React.Component {
     };
     this.onChange = (editorState) => this.setState({editorState});
   }
+  _onToggleClick(style) {
+    this.onChange(RichUtils.toggleInlineStyle(
+      this.state.editorState,
+      style
+    ));
+  }
 
 
   render() {
@@ -21,6 +27,11 @@ class MyEditor extends React.Component {
         <h2>Sample Document</h2>
         <p>Shareable Document ID: {this.state.DocID}</p>
         <button>Save Changes</button>
+        <br>
+        </br>
+        <button onClick={() => this._onToggleClick('BOLD')}>Bold</button>
+        <button onClick={() => this._onToggleClick('ITALIC')}>Italicize</button>
+        <button onClick={() => this._onToggleClick('UNDERLINE')}>Underline</button>
         <div>
           {/* <TextToolBox style={myStyles.toolBoxContainer}/> */}
           <div style={editorStyles.textContainer}>
