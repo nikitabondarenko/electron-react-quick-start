@@ -1,6 +1,6 @@
-const mongoose = require(‘mongoose’);
+const mongoose = require('mongoose');
 
-const User = mongoose.model(“User”, {
+const User = mongoose.model("User", {
   username: {
     type: String,
     require: true,
@@ -8,43 +8,39 @@ const User = mongoose.model(“User”, {
   },
   password: {
     type: String,
-    require: true,
+    require: true
   },
   firstname: {
     type: String,
-    require: true,
+    require: true
   },
   lastname: {
     type: String,
-    require: true,
+    require: true
   },
   documentsOwned: {
     type: Array, //array of document id's that User has created
-    require: true;
+    require: true
   },
   documentsCanEdit: {
     type: Array, //array of document id's that have been shared with User
-    require: true;
+    require: true
   }
 })
 
-const Document = mongoose.model(“Document”, {
-  title: {
-    type: String,
-    require: true,
-  },
+const Document = mongoose.model("Document", {
   rawText: {
     type: String,
-    require: true,
+    require: true
   },
   owner: {
-    type: Array,
-    require: true,
+    type: String,
+    require: true
   },
   sharedWith: {
     type: Array,
-    require: true,
+    require: true
   }
 })
-
+const models = {User: User, Document: Document}
 module.exports = models;

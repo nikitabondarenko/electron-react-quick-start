@@ -1,10 +1,14 @@
 const express = require('express');
-// var exphbs = require('express-handlebars'); 
+// var exphbs = require('express-handlebars');
 // var path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const util = require('util');
-const { User } = require('../models/models');
+const { User, Document } = require('../models/models');
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGODB_URI)
+
 
 const app = express();
 // Example route
@@ -34,18 +38,19 @@ app.use(cookieSession({keys: ['secret1', 'secret2']}));
 
 // parse urlencoded request bodies into req.body
 var bodyParser = require('body-parser');
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
-  
+
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, user) {
       done(err, user);
     });
 });
-  
+
 // passport strategy;
 passport.use(new LocalStrategy(function(username, password, done) {
   if (! util.isString(username)) {
@@ -62,7 +67,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
         done(null, false, { message: 'Incorrect username or password' });
         return;
       }
-  
+
       done(null, user);
     });
 }));
@@ -111,8 +116,8 @@ app.post('/register', (req, res, next) => {
   });
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.initialize());
+//app.use(passport.session());
 
 app.get('/login', (req, res) => {
   res.json({success: true});
@@ -122,6 +127,31 @@ app.post('/login', passport.authenticate('local', {
   successRedirect: '/activity',
   failureRedirect: '/login'
 }));
+
+app.post('/saveFile', (req, res) => {
+  console.log(req.body.id);
+  console.log(req.body.content),
+  Document.update({_id: req.body.id },{$set: {rawText: req.body.content}}, (err, result) => {
+    console.log(result);
+    if (err){
+      res.send('did not update model', err)
+    }else {
+      res.send("model updated")
+    }
+  })
+})
+
+app.get('/makeDoc', (req, res) => {
+
+  const newDoc = new Document({
+    rawText: '',
+    owner: 'nik',
+    sharedWith: []
+  });
+
+  newDoc.save((err, res) => {});
+})
+
 
 app.get('/logout', (req, res, next) => {
   req.logout();

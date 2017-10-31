@@ -1,14 +1,15 @@
 var React = require('react');
-import {Editor, EditorState,RichUtils} from 'draft-js';
+import {Editor, EditorState,RichUtils, convertToRaw} from 'draft-js';
 //import TextToolBox from './TextToolBox';
 import editorStyles from '../styles/editorStyles';
+import axios from 'axios';
 
 class MyEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      DocID: 132132132132132
+      DocID: '59f8f1d7100a520d987d1cfe'
     };
     this.onChange = (editorState) => this.setState({editorState});
   }
@@ -18,6 +19,21 @@ class MyEditor extends React.Component {
       style
     ));
   }
+  _saveButtonClick() {
+    var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
+    axios.post('http://localhost:3000/saveFile', {
+      content: contentString,
+      id: this.state.DocID
+    }, {
+      //add some settings if needed
+    })
+    .then(function(resp){
+      console.log('sent to server successfully');
+    })
+    .catch(function(err){
+      console.log('did not sent to server', err);
+    })
+  }
 
 
   render() {
@@ -26,7 +42,7 @@ class MyEditor extends React.Component {
         <button> Back to Documents Portal</button>
         <h2>Sample Document</h2>
         <p>Shareable Document ID: {this.state.DocID}</p>
-        <button>Save Changes</button>
+        <button onClick={() => this._saveButtonClick()}>Save Changes</button>
         <br>
         </br>
         <button onClick={() => this._onToggleClick('BOLD')}>Bold</button>
