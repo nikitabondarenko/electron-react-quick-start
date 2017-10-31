@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { BrowserRouter, Route, Switch , Link} from 'react-router-dom';
 
 const inlineStyle = {
@@ -50,9 +49,6 @@ const inlineStyle = {
     )
 
 
-Days.propTypes = {
-};
-
 const mapStateToProps = (state) => {
   console.log(state)
   return {
@@ -62,7 +58,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Register);
+// export default connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(Register);
