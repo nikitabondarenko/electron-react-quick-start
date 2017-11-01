@@ -1,6 +1,6 @@
 const express = require('express');
-// var exphbs = require('express-handlebars');
-// var path = require('path');
+// var exphbs = require('express-handlebars'); 
+var path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const util = require('util');
@@ -12,8 +12,10 @@ mongoose.connect(process.env.MONGODB_URI)
 
 const app = express();
 // Example route
+
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  console.log('Listen Here')
+  res.send('Server 3000 is up and running');
 });
 
 var REQUIRED_ENV = ['MONGODB_URI'];
@@ -40,6 +42,7 @@ app.use(cookieSession({keys: ['secret1', 'secret2']}));
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
@@ -90,7 +93,7 @@ app.get('/register', (req, res) => {
   res.json({success: true});
 });
 
-app.post('/register', (req, res, next) => {
+app.post('/register', (req, res) => {
   var error = validateReq(req.body);
   if (error) {
     console.log(error);
@@ -107,26 +110,30 @@ app.post('/register', (req, res, next) => {
     if (err){
       console.log('there was an error', err);
       res.status(500).redirect('/register');
-      return
+      return;
     }
     console.log("Saved User: ", user);
     res.json({success: true});
-    res.redirect('/login');
-    return
+    return;
   });
 });
 
-//app.use(passport.initialize());
-//app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/login', (req, res) => {
   res.json({success: true});
 });
 
-app.post('/login', passport.authenticate('local', {
-  successRedirect: '/activity',
-  failureRedirect: '/login'
-}));
+app.post('/login', passport.authenticate('local'), (req, res) => {
+  res.json({success: true});
+ }
+);
+
+app.get('/home', (req, res) => {
+  res.json({success:true, user: req.user})
+})
+
 
 app.post('/saveFile', (req, res) => {
   console.log(req.body.id);
@@ -145,7 +152,7 @@ app.get('/makeDoc', (req, res) => {
 
   const newDoc = new Document({
     rawText: '',
-    owner: 'nik',
+    owner: req.user.username,
     sharedWith: []
   });
 
@@ -154,13 +161,14 @@ app.get('/makeDoc', (req, res) => {
 
 
 app.get('/logout', (req, res, next) => {
+  console.log('an attempt')
   req.logout();
   req.session.save((err) => {
     if (err) {
       return next(err);
     }
     res.json({success: true});
-    res.redirect('/login');
+    
   });
 });
 
