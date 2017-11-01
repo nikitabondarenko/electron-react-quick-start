@@ -50,7 +50,7 @@ app.on('ready', createWindow);
 
 app.on('ready', () => {
   globalShortcut.register('CommandOrControl+P', () => {
-    console.log('CommandOrControl+P is pressed')
+    // return this.props.history.push("/login");
   })
 })
 

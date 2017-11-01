@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider, connect } from 'react-redux';
 // import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
 // import router from '../backend/server';
@@ -12,7 +10,7 @@ import Home from './containers/Home';
 import Register from './containers/Register';
 import Login from './containers/Login';
 
-import Editor from './components/Editor';
+import MyEditor from './components/Editor';
 
 // import mainReducer from '../reducers/mainReducer'
 // console.log(mainReducer)
@@ -48,6 +46,7 @@ class App extends React.Component {
         return (
         <div>
             <Switch>
+                <Route path="/editDoc" component={MyEditor}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/register" component={Register}/>
                 <Route path="/home" component={Home}/>

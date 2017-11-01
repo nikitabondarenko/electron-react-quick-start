@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider, connect } from 'react-redux';
 // import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
 // import router from '../backend/server';
@@ -28,10 +26,17 @@ const inlineStyle4 = {
 class DocBox extends React.Component {
     constructor(props){
         super(props);
+        this.state = {
+            realDocs: []
+        }
+    }
+
+    componentWillReceiveProps(props){
+        console.log(props);
+        this.setState({realDocs: props.docs});
     }
 
     render() {
-
     const fakeDocs = [
         {title: "Document 1 on Love", content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. "},
         {title: "Document 2 on Joy", content:"Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa."},
@@ -78,9 +83,9 @@ class DocBox extends React.Component {
             <div style={inlineStyle4}>
                <h2>Documents</h2>
                <ul>
-               {fakeDocs.map((testDoc) => {
+               {this.state.realDocs.map((testDoc) => {
                 return (
-                 <Link to="/home"> <li> {testDoc.title} </li> </Link>
+                 <Link to='/editDoc'  key={testDoc._id}> <li> {testDoc.title} </li> </Link>
                 )
               })}
               </ul>

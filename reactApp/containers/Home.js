@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider, connect } from 'react-redux';
 // import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
 // import router from '../backend/server';
@@ -31,7 +29,9 @@ class Home extends React.Component {
                 lastName: '',
                 password: '',
                 username: '',
-                id: ''
+                id: '',
+                documentsOwned: [],
+                documentsCanEdit: []
             }
         }
     }
@@ -43,15 +43,10 @@ class Home extends React.Component {
     }
 
     userVerif(resp){
+        console.log(resp.data.user)
         if (resp.data.success){
             this.setState({
-                user: {
-                    firstName: resp.data.user.firstName,
-                    lastName: resp.data.user.lastName,
-                    password: resp.data.user.password,
-                    username: resp.data.user.username,
-                    id: resp.data.user._id
-                }
+                user: resp.data.user
             })
         }
         
@@ -75,7 +70,8 @@ class Home extends React.Component {
     }
 
     newDoc(){
-        axios.get('http://localhost:3000/makeDoc', {}
+        // var title = prompt("What would you like to name your document?", "New Document") 
+        axios.post('http://localhost:3000/makeDoc', {}
     )
     .then((resp) => (this.newDocExec(resp)))
     .catch(error => console.log('BAD', error));
@@ -110,7 +106,7 @@ class Home extends React.Component {
                         value={this.state.addDoc} onChange={(e) => this.handleChange(e)}></input>
                         <button onClick={() => this.testUser()} style={{margin: 10}} className="btn btn-primary">Add shared document</button>
                     </div>
-                <DocBox />
+                <DocBox docs={this.state.user.documentsOwned} />
                 <button onClick={() => this.newDoc()} className="btn btn-success">Make a new document</button>
                 <button onClick={() => this.logout()} style={{margin: 10}} className="btn btn-danger">Logout</button>
             </div>  

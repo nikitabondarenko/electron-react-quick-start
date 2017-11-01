@@ -1,5 +1,5 @@
 var React = require('react');
-import {Editor, EditorState,RichUtils, convertToRaw} from 'draft-js';
+import {Editor, EditorState, RichUtils, convertToRaw} from 'draft-js';
 //import TextToolBox from './TextToolBox';
 import editorStyles from '../styles/editorStyles';
 import axios from 'axios';
@@ -9,37 +9,54 @@ class MyEditor extends React.Component {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      DocID: '59f8f1d7100a520d987d1cfe'
+      DocID: '59fa408a52f37f1f40bf999c'
     };
+    console.log('inside myeditor constructor')
     this.onChange = (editorState) => this.setState({editorState});
   }
+
   _onToggleClick(style) {
     this.onChange(RichUtils.toggleInlineStyle(
       this.state.editorState,
       style
     ));
   }
+
   _saveButtonClick() {
-    var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
-    axios.post('http://localhost:3000/saveFile', {
-      content: contentString,
-      id: this.state.DocID
-    }, {
-      //add some settings if needed
-    })
-    .then(function(resp){
-      console.log('sent to server successfully');
-    })
-    .catch(function(err){
-      console.log('did not sent to server', err);
-    })
+    console.log('in save button click', this.state.editorState)
+    // if(this.state.editorState){
+    // var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
+    // }
+    //   axios.post('http://localhost:3000/saveFile', {
+    //   content: contentString,
+    //   id: this.state.DocID
+    // }, {
+    //   //add some settings if needed
+    // })
+    // .then(function(resp){
+    //   console.log('sent to server successfully');
+    // })
+    // .catch(function(err){
+    //   console.log('did not sent to server', err);
+    // })
   }
+
+  goBack(){
+    return this.props.history.push("/home");
+  }
+
+  // componentDidMount(){
+  //   axios.get('http://localhost:3000/docs', {}
+  // )
+  // .then((resp) => (this.userVerif(resp)))
+  // .catch(error => console.log('BAD', error));
+  // }
 
 
   render() {
     return (
       <div>
-        <button> Back to Documents Portal</button>
+        <button onClick={() => this.goBack()}>Back to Documents Portal</button>
         <h2>Sample Document</h2>
         <p>Shareable Document ID: {this.state.DocID}</p>
         <button onClick={() => this._saveButtonClick()}>Save Changes</button>
@@ -58,5 +75,4 @@ class MyEditor extends React.Component {
     );
   }
 }
-{/* <Editor style={{border: '2px solid black'}}/>; */}
-export default Editor;
+export default MyEditor;

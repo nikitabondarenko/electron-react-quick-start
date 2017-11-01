@@ -44,6 +44,10 @@ var userSchema = new Schema({
     sharedWith: {
       type: Array,
       require: true
+    },
+    title: {
+      type: String,
+      require: false
     }
   })
 

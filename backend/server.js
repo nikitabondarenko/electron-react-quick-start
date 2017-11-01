@@ -103,7 +103,9 @@ app.post('/register', (req, res) => {
     username : req.body.username,
     password: req.body.password,
     firstName: req.body.firstName,
-    lastName: req.body.lastName
+    lastName: req.body.lastName,
+    documentsOwned: [],
+    documentsCanEdit: []
   });
 
   user.save(function(err){
@@ -148,28 +150,40 @@ app.post('/saveFile', (req, res) => {
   })
 })
 
-app.get('/makeDoc', (req, res) => {
+app.post('/makeDoc', (req, res) => {
 
   const newDoc = new Document({
     rawText: '',
+    title: 'New Document',
     owner: req.user.username,
-    sharedWith: []
+    sharedWith: [],
+    
   });
 
-  newDoc.save((err, res) => {});
-})
+  newDoc.save((err, doc) => {
+    if (err){
+      console.log(err);
+      res.json({success: false});
+    } else {
+      req.user.documentsOwned.push(doc);
+      req.user.save((err) =>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false})
+        } else {
+          console.log("document created bebe");
+          res.json({success: true})
+        }
+      })
+    }
+  });
+  }
+)
 
 
 app.get('/logout', (req, res, next) => {
-  console.log('an attempt')
   req.logout();
-  req.session.save((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.json({success: true});
-    
-  });
+  res.json({success: true});
 });
 
 
