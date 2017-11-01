@@ -32,4 +32,4 @@ class MyEditor extends React.Component {
   }
 }
 {/* <Editor style={{border: '2px solid black'}}/>; */}
-export default MyEditor;
+export default Editor;
