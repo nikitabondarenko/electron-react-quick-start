@@ -1,15 +1,21 @@
 const express = require('express');
 // var exphbs = require('express-handlebars'); 
-// var path = require('path');
+var path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const util = require('util');
-const { User } = require('../models/models');
+const { User, Document } = require('../models/models');
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGODB_URI)
+
 
 const app = express();
 // Example route
+
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  console.log('Listen Here')
+  res.send('Server 3000 is up and running');
 });
 
 var REQUIRED_ENV = ['MONGODB_URI'];
@@ -34,18 +40,20 @@ app.use(cookieSession({keys: ['secret1', 'secret2']}));
 
 // parse urlencoded request bodies into req.body
 var bodyParser = require('body-parser');
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
-  
+
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, user) {
       done(err, user);
     });
 });
-  
+
 // passport strategy;
 passport.use(new LocalStrategy(function(username, password, done) {
   if (! util.isString(username)) {
@@ -62,7 +70,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
         done(null, false, { message: 'Incorrect username or password' });
         return;
       }
-  
+
       done(null, user);
     });
 }));
@@ -85,7 +93,7 @@ app.get('/register', (req, res) => {
   res.json({success: true});
 });
 
-app.post('/register', (req, res, next) => {
+app.post('/register', (req, res) => {
   var error = validateReq(req.body);
   if (error) {
     console.log(error);
@@ -95,19 +103,20 @@ app.post('/register', (req, res, next) => {
     username : req.body.username,
     password: req.body.password,
     firstName: req.body.firstName,
-    lastName: req.body.lastName
+    lastName: req.body.lastName,
+    documentsOwned: [],
+    documentsCanEdit: []
   });
 
   user.save(function(err){
     if (err){
       console.log('there was an error', err);
       res.status(500).redirect('/register');
-      return
+      return;
     }
     console.log("Saved User: ", user);
     res.json({success: true});
-    res.redirect('/login');
-    return
+    return;
   });
 });
 
@@ -118,20 +127,101 @@ app.get('/login', (req, res) => {
   res.json({success: true});
 });
 
-app.post('/login', passport.authenticate('local', {
-  successRedirect: '/activity',
-  failureRedirect: '/login'
-}));
+app.post('/login', passport.authenticate('local'), (req, res) => {
+  res.json({success: true});
+ }
+);
+
+app.get('/home', (req, res) => {
+  res.json({success:true, user: req.user})
+})
+
+
+app.post('/saveFile', (req, res) => {
+  console.log(req.body.id);
+  console.log(req.body.content),
+  Document.update({_id: req.body.id },{$set: {rawText: req.body.content}}, (err, result) => {
+    console.log(result);
+    if (err){
+      res.send('did not update model', err)
+    }else {
+      res.send("model updated")
+    }
+  })
+})
+
+app.post('/makeDoc', (req, res) => {
+
+  const newDoc = new Document({
+    rawText: '',
+    title: 'New Document',
+    owner: req.user.username,
+    sharedWith: [],
+  });
+
+  newDoc.save((err, doc) => {
+    if (err){
+      console.log(err);
+      res.json({success: false});
+    } else {
+      req.user.documentsOwned.push(doc);
+      req.user.save((err) =>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false})
+        } else {
+          console.log("document created bebe");
+          res.json({success: true})
+        }
+      })
+    }
+  });
+  }
+)
+
+app.get('/editDoc/:Doc', (req, res) => {
+  Document.findById(req.params.Doc, function(err, doc){
+    if (err){
+      console.log('there was an error', err)
+      res.json({success: false})
+    } else {
+      res.json({success: true, document: doc})
+    }
+  })
+})
+
+app.post('/search', (req, res) => {
+  Document.findById(req.body.docId, function(err, doc){
+    if (err){
+      console.log('there was an error', err);
+    } else {
+      doc.sharedWith.push(req.user._id)
+      req.user.documentsCanEdit.push(doc);
+      
+      req.user.save((err) =>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false});
+        } else {
+          console.log("user information updated");
+        }
+      })
+      doc.save((err)=>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false})
+        } else {
+          console.log('document placed in right directory and updated')
+          res.json({success: true});
+        }
+      })
+    }
+  })
+})
 
 app.get('/logout', (req, res, next) => {
   req.logout();
-  req.session.save((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.json({success: true});
-    res.redirect('/login');
-  });
+  res.json({success: true});
 });
 
 

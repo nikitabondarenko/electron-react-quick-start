@@ -1,6 +1,5 @@
 var React = require('react');
-import {Editor, EditorState, RichUtils, DefaultDraftBlockRenderMap} from 'draft-js';
-//import TextToolBox from './TextToolBox';
+import {Editor, EditorState, RichUtils, DefaultDraftBlockRenderMap, convertToRaw} from 'draft-js';
 import editorStyles from '../styles/editorStyles';
 import {Glyphicon} from 'react-bootstrap';
 var FontAwesome = require('react-fontawesome');
@@ -9,6 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import {Popover} from 'material-ui/Popover';
 import {Map} from 'immutable'
+import axios from 'axios';
 
 const myBlockTypes = DefaultDraftBlockRenderMap.merge(new Map({
   'center': {
@@ -25,12 +25,13 @@ const styleMap = {
   },
 };
 
+
 class MyEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      DocID: 132132132132132,
+      DocID: '',
       inlineStyles: {},
       currentFontSize: 12
     };
@@ -160,15 +161,56 @@ class MyEditor extends React.Component {
     );
   }
 
+  _saveButtonClick() {
+    console.log('in save button click', this.state.editorState)
+    if(this.state.editorState){
+    var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
+    }
+      axios.post('http://localhost:3000/saveFile', {
+      content: contentString,
+      id: this.state.DocID
+    }, {
+      //add some settings if needed
+    })
+    .then(function(resp){
+      console.log('sent to server successfully');
+    })
+    .catch(function(err){
+      console.log('did not sent to server', err);
+    })
+  }
+
+  getDocInfo(resp){
+    console.log('logged data', resp.data)
+  }
+
+  componentDidMount() {
+    // console.log(cheatingVar)
+    axios.get('http://localhost:3000/editDoc/:Doc', {}
+    )
+    .then((resp) => (this.getDocInfo(resp)))
+    .catch(error => console.log('BAD', error));
+  }
+
+  goBack(){
+    return this.props.history.push("/home");
+  }
+
+  // componentDidMount(){
+  //   axios.get('http://localhost:3000/docs', {}
+  // )
+  // .then((resp) => (this.userVerif(resp)))
+  // .catch(error => console.log('BAD', error));
+  // }
+
 
   render() {
     return (
       <div>
-        <button> Back to Documents Portal</button>
+        <button onClick={() => this.goBack()}>Back to Documents Portal</button>
         <h2>Sample Document</h2>
         <p>Shareable Document ID: {this.state.DocID}</p>
-        <button>Save Changes</button>
-        {/* {this.state.pickedOpen ? <SketchPicker /> : null} */}
+        <button onClick={() => this._saveButtonClick()}>Save Changes</button>
         <br>
         </br>
         <div>
@@ -206,5 +248,4 @@ class MyEditor extends React.Component {
     );
   }
 }
-{/* <Editor style={{border: '2px solid black'}}/>; */}
 export default MyEditor;
