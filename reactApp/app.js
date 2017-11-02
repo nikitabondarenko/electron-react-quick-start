@@ -48,8 +48,8 @@ class App extends React.Component {
                 <Route path="/login" component={Login}/>
                 <Route path="/register" component={Register}/>
                 <Route path="/home" component={Home}/>
-                <Route path="/" component={Login}/>
-                {/* <Route path="/" component={MyEditor}/> */}
+                {/* <Route path="/" component={Login}/> */}
+                <Route path="/" component={MyEditor}/>
             </Switch>
         </div>
         )
