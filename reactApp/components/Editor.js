@@ -167,9 +167,6 @@ class MyEditor extends React.Component {
       </div>
     );
   }
-
-  // Mousetrap.bind('command+s', () => { _saveButtonClick() })
-  // window.addEventListener('keyup', _saveButtonClick(), true)
   
 
   _saveButtonClick() {
@@ -210,6 +207,10 @@ class MyEditor extends React.Component {
   }
 
   componentDidMount() {
+    Mousetrap.bind(['command+s', 'ctrl+s'], () => { this._saveButtonClick() })
+
+    window.addEventListener('keyup', () => this._saveButtonClick(), true)
+
     axios.get(`http://localhost:3000/editDoc/${this.props.match.params.docId}`, {}
     )
     .then((resp) => (this.getDocInfo(resp)))

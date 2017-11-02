@@ -19,7 +19,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, 'assets/icons/png/icon.png')
+    icon: path.join(__dirname, 'assets', 'icons', 'png', 'icon.png')
   });
 
   // and load the index.html of the app.
@@ -50,6 +50,7 @@ app.on('ready', createWindow);
 
 app.on('ready', () => {
   globalShortcut.register('CommandOrControl+P', () => {
+    console.log('CommandP pushed')
     // return this.props.history.push("/login");
   })
 })

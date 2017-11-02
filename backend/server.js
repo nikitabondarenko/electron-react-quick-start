@@ -167,7 +167,7 @@ app.post('/makeDoc', (req, res) => {
           console.log('there was an error', err);
           res.json({success: false})
         } else {
-          res.redirect(`/editDoc/${doc._id}`);
+          res.json({success: true, documentInfo: doc})
         }
       })
     }
@@ -210,7 +210,7 @@ app.post('/search', (req, res) => {
           console.log('document placed in right directory and updated')
         }
       })
-      res.redirect(`/editDoc/${doc._id}`);
+      res.json({success: true, documentInfo: doc});
     }
   })
 })

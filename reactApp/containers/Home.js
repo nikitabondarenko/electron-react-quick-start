@@ -42,7 +42,7 @@ class Home extends React.Component {
 
     getSharedDocExec(resp){
         if (resp.data.success){
-            return this.props.history.push(`/editDoc/:${resp.data.document._id}`);
+            return this.props.history.push(`/editDoc/${resp.data.document._id}`);
         }
     }
 
@@ -63,7 +63,7 @@ class Home extends React.Component {
     newDocExec(resp){
         console.log('in newDocExec', resp.data)
         if (resp.data.success){
-            return this.props.history.push(`/editDoc/:${resp.data.document._id}`)
+            return this.props.history.push(`/editDoc/${resp.data.documentInfo._id}`)
         }
     }
 
