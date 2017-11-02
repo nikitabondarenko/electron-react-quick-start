@@ -23,12 +23,9 @@ export default class App extends React.Component {
     return (
       <div id='content'>
         <h1>Draft.js Editor</h1>
-<<<<<<< HEAD
         <AppStyle />
-=======
         {/* <AppStyle /> */}
         <button onClick={() => this._onBoldClick(this)}>Bold</button>
->>>>>>> e7d21ee5b89553b1c14a14c497d2a638b2e7a6d4
         <div className='editor'>
           <Editor
             editorState={this.state.editorState}

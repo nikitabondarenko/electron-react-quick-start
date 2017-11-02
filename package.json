@@ -13,10 +13,13 @@
     "start": "electron main.js",
     "server": "node backend/server.js"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bvi1994/electron-react-quick-start.git"
+  },
   "keywords": [],
   "author": "",
-  "license": "",
+  "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
@@ -36,18 +39,28 @@
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",
     "cookie-session": "^2.0.0-beta.3",
-    "ejs": "^2.5.7",
     "draft-js": "^0.10.4",
+    "ejs": "^2.5.7",
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
+    "immutable": "^3.8.2",
     "local": "^0.3.3",
+    "material-ui": "^0.19.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "prop-types": "^15.6.0",
     "react": "^15.6.1",
+    "react-bootstrap": "^0.31.5",
+    "react-color": "^2.13.8",
     "react-dom": "^15.6.1",
+    "react-fontawesome": "^1.6.1",
     "react-router-dom": "^4.2.2",
+    "react-tap-event-plugin": "^3.0.2",
     "reflexbox": "^3.0.0-0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/bvi1994/electron-react-quick-start/issues"
+  },
+  "homepage": "https://github.com/bvi1994/electron-react-quick-start#readme"
 }
