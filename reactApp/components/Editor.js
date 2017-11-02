@@ -35,7 +35,8 @@ class MyEditor extends React.Component {
       editorState: EditorState.createEmpty(),
       DocID: '',
       inlineStyles: {},
-      currentFontSize: 12
+      currentFontSize: 12,
+      color: '#000'
     };
 
     this.focus = () => this.refs.editor.focus();
@@ -127,10 +128,13 @@ class MyEditor extends React.Component {
     )
     // console.log(e);
     // e.preventDefault();
+    this.refs.editor.focus();
     this.setState({
+      color,
       inlineStyles: newInlineStyle,
       editorState: RichUtils.toggleInlineStyle(this.state.editorState, color.hex)
-    })
+    });
+    this.closeColorPicker();
   }
 
   pickColor(){
@@ -156,6 +160,7 @@ class MyEditor extends React.Component {
         >
           <SketchPicker
             onChangeComplete={this.formatColor.bind(this)}
+            color={this.state.color}
             // onMouseDown={(e) => this._onToggleClick(e)}
           />
         </Popover>
