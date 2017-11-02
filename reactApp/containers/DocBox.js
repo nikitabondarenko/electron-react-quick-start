@@ -22,18 +22,18 @@ const inlineStyle4 = {
     'backgroundColor': '#f2f9f9',
 };
 
-
 class DocBox extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            realDocs: []
+            userDocs: [],
+            sharedDocs: []
         }
     }
 
     componentWillReceiveProps(props){
-        console.log(props);
-        this.setState({realDocs: props.docs});
+        console.log('these are thre props', props);
+        this.setState({userDocs: props.docs, sharedDocs: props.otherDocs});
     }
 
     render() {
@@ -81,14 +81,27 @@ class DocBox extends React.Component {
     ]
         return (
             <div style={inlineStyle4}>
-               <h2>Documents</h2>
-               <ul>
-               {this.state.realDocs.map((testDoc) => {
-                return (
-                 <Link to='/editDoc'  key={testDoc._id}> <li> {testDoc.title} </li> </Link>
-                )
-              })}
-              </ul>
+                <h2>Documents</h2>
+                <div>
+                    <span>Your Documents</span>
+                    <ul>
+                    {this.state.userDocs.map((testDoc) => {
+                        return (
+                        <Link onClick={() => props.history.push(`editDoc/:${testDoc}`)} to={'/editDoc'} key={testDoc._id}><li>{testDoc.title}</li></Link>
+                        )
+                    })}
+                    </ul>
+                </div>
+                <div>
+                    <span>Documents shared with you</span>
+                    <ul>
+                    {this.state.sharedDocs.map((testDoc) => {
+                        return (
+                        <Link onClick={() => props.history.push(`editDoc/:${testDoc}`)} to={'/editDoc'} key={testDoc._id}><li>{testDoc.title}</li></Link>
+                        )
+                    })}
+                    </ul>
+                </div>
             </div>  
         )
     }

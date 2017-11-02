@@ -46,7 +46,7 @@ class App extends React.Component {
         return (
         <div>
             <Switch>
-                <Route path="/editDoc" component={MyEditor}/>
+                <Route path="/editDoc/:Doc" component={MyEditor}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/register" component={Register}/>
                 <Route path="/home" component={Home}/>

@@ -9,9 +9,8 @@ class MyEditor extends React.Component {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      DocID: '59fa408a52f37f1f40bf999c'
+      DocID: ''
     };
-    console.log('inside myeditor constructor')
     this.onChange = (editorState) => this.setState({editorState});
   }
 
@@ -24,22 +23,34 @@ class MyEditor extends React.Component {
 
   _saveButtonClick() {
     console.log('in save button click', this.state.editorState)
-    // if(this.state.editorState){
-    // var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
-    // }
-    //   axios.post('http://localhost:3000/saveFile', {
-    //   content: contentString,
-    //   id: this.state.DocID
-    // }, {
-    //   //add some settings if needed
-    // })
-    // .then(function(resp){
-    //   console.log('sent to server successfully');
-    // })
-    // .catch(function(err){
-    //   console.log('did not sent to server', err);
-    // })
+    if(this.state.editorState){
+    var contentString = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
+    }
+      axios.post('http://localhost:3000/saveFile', {
+      content: contentString,
+      id: this.state.DocID
+    }, {
+      //add some settings if needed
+    })
+    .then(function(resp){
+      console.log('sent to server successfully');
+    })
+    .catch(function(err){
+      console.log('did not sent to server', err);
+    })
   }
+
+  getDocInfo(resp){
+    console.log('logged data', resp.data)
+  }
+
+  componentDidMount() {
+    // console.log(cheatingVar)
+    axios.get('http://localhost:3000/editDoc/:Doc', {}
+    )
+    .then((resp) => (this.getDocInfo(resp)))
+    .catch(error => console.log('BAD', error));
+  }   
 
   goBack(){
     return this.props.history.push("/home");

@@ -42,18 +42,19 @@ class Home extends React.Component {
         this.setState({[name]: value});
     }
 
-    userVerif(resp){
-        console.log(resp.data.user)
+    getSharedDocExec(resp){
         if (resp.data.success){
-            this.setState({
-                user: resp.data.user
-            })
+            console.log('document added');
+            return this.props.history.push("/editDoc");
         }
-        
     }
 
-    testUser(){
-        console.log(this.state.user)
+    getSharedDoc(){
+        axios.post('http://localhost:3000/search', {
+            docId: this.state.addDoc
+        })
+        .then((resp) => (this.getSharedDocExec(resp)))
+        .catch(error => console.log('BAD', error));
     }
 
     logoutExec(resp){
@@ -64,17 +65,17 @@ class Home extends React.Component {
 
     newDocExec(resp){
         if (resp.data.success){
-            console.log("doc created")
-            // return this.props.history.push("/newDoc")
+            console.log("doc created");
+            return this.props.history.push("/editDoc")
         }
     }
 
     newDoc(){
         // var title = prompt("What would you like to name your document?", "New Document") 
         axios.post('http://localhost:3000/makeDoc', {}
-    )
-    .then((resp) => (this.newDocExec(resp)))
-    .catch(error => console.log('BAD', error));
+        )
+        .then((resp) => (this.newDocExec(resp)))
+        .catch(error => console.log('BAD', error));
     }
 
     logout(){
@@ -82,6 +83,15 @@ class Home extends React.Component {
             )
             .then((resp) => (this.logoutExec(resp)))
             .catch(error => console.log('BAD', error));
+    }
+
+    userVerif(resp){
+        if (resp.data.success){
+            this.setState({
+                user: resp.data.user
+            })
+        }
+        
     }
 
     componentDidMount() {
@@ -99,14 +109,14 @@ class Home extends React.Component {
     render() {
         return (
             <div style={inlineStyle3}>
-                <h1>  Welcome {this.state.user.firstName} </h1>
+                <h1>Welcome {this.state.user.firstName}</h1>
                 <br/>
                     <div style={{marginBottom: 10, marginTop: -15}}>
                         <input type="text" className="form-control" placeholder="Add a document" id="addDoc"
                         value={this.state.addDoc} onChange={(e) => this.handleChange(e)}></input>
-                        <button onClick={() => this.testUser()} style={{margin: 10}} className="btn btn-primary">Add shared document</button>
+                        <button onClick={() => this.getSharedDoc()} style={{margin: 10}} className="btn btn-primary">Add shared document</button>
                     </div>
-                <DocBox docs={this.state.user.documentsOwned} />
+                <DocBox docs={this.state.user.documentsOwned} otherDocs={this.state.user.documentsCanEdit} />
                 <button onClick={() => this.newDoc()} className="btn btn-success">Make a new document</button>
                 <button onClick={() => this.logout()} style={{margin: 10}} className="btn btn-danger">Logout</button>
             </div>  

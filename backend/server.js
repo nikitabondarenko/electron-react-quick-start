@@ -157,7 +157,6 @@ app.post('/makeDoc', (req, res) => {
     title: 'New Document',
     owner: req.user.username,
     sharedWith: [],
-    
   });
 
   newDoc.save((err, doc) => {
@@ -180,6 +179,45 @@ app.post('/makeDoc', (req, res) => {
   }
 )
 
+app.get('/editDoc/:Doc', (req, res) => {
+  Document.findById(req.params.Doc, function(err, doc){
+    if (err){
+      console.log('there was an error', err)
+      res.json({success: false})
+    } else {
+      res.json({success: true, document: doc})
+    }
+  })
+})
+
+app.post('/search', (req, res) => {
+  Document.findById(req.body.docId, function(err, doc){
+    if (err){
+      console.log('there was an error', err);
+    } else {
+      doc.sharedWith.push(req.user._id)
+      req.user.documentsCanEdit.push(doc);
+      
+      req.user.save((err) =>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false});
+        } else {
+          console.log("user information updated");
+        }
+      })
+      doc.save((err)=>{
+        if (err){
+          console.log('there was an error', err);
+          res.json({success: false})
+        } else {
+          console.log('document placed in right directory and updated')
+          res.json({success: true});
+        }
+      })
+    }
+  })
+})
 
 app.get('/logout', (req, res, next) => {
   req.logout();
