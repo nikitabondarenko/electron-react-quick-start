@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './containers/App';
 import Editor from './components/Editor.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
-// import router from '../backend/server';
 import axios from 'axios';
 
 import DocBox from './containers/DocBox';
@@ -33,23 +31,20 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        // console.log('these are the realest props', this.props)
     }
 
     componentWillReceiveProps(nextProps){
-        // console.log('these are my props', nextProps)
     }
 
     render(){
         return (
         <div>
             <Switch>
-                <Route path="/editDoc/:Doc" component={MyEditor}/>
+                <Route path="/editDoc/:docId" component={MyEditor}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/register" component={Register}/>
                 <Route path="/home" component={Home}/>
                 <Route path="/" component={Login}/>
-                {/* <Route path="/" component={MyEditor}/> */}
             </Switch>
         </div>
         )
@@ -63,7 +58,3 @@ ReactDOM.render(
       </HashRouter>
     </MuiThemeProvider>,
     document.getElementById('root'));
-// ReactDOM.render(
-//     <HashRouter>
-//     <App />
-//     </HashRouter>,

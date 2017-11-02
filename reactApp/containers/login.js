@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
-// import router from '../backend/server';
 import axios from 'axios';
 
 const inlineStyle2 = {
     'border': 'solid',
-    // 'borderRadius': 30,
     'flex': 1,
     'padding': 75,
     'display': 'flex',
@@ -50,8 +47,6 @@ class Login extends React.Component {
         )
         .then((resp) => (this.changePage(resp)))
         .catch(error => console.log('BAD', error))
-
-        console.log(user)
     }
 
 

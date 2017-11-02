@@ -114,7 +114,7 @@ app.post('/register', (req, res) => {
       res.status(500).redirect('/register');
       return;
     }
-    console.log("Saved User: ", user);
+    console.log(`Saved User: ${user.firstName}`);
     res.json({success: true});
     return;
   });
@@ -138,10 +138,7 @@ app.get('/home', (req, res) => {
 
 
 app.post('/saveFile', (req, res) => {
-  console.log(req.body.id);
-  console.log(req.body.content),
   Document.update({_id: req.body.id },{$set: {rawText: req.body.content}}, (err, result) => {
-    console.log(result);
     if (err){
       res.send('did not update model', err)
     }else {
@@ -154,7 +151,7 @@ app.post('/makeDoc', (req, res) => {
 
   const newDoc = new Document({
     rawText: '',
-    title: 'New Document',
+    title: req.body.title,
     owner: req.user.username,
     sharedWith: [],
   });
@@ -170,8 +167,7 @@ app.post('/makeDoc', (req, res) => {
           console.log('there was an error', err);
           res.json({success: false})
         } else {
-          console.log("document created bebe");
-          res.json({success: true})
+          res.redirect(`/editDoc/${doc._id}`);
         }
       })
     }
@@ -179,8 +175,8 @@ app.post('/makeDoc', (req, res) => {
   }
 )
 
-app.get('/editDoc/:Doc', (req, res) => {
-  Document.findById(req.params.Doc, function(err, doc){
+app.get('/editDoc/:docId', (req, res) => {
+  Document.findById(req.params.docId, function(err, doc){
     if (err){
       console.log('there was an error', err)
       res.json({success: false})
@@ -212,9 +208,9 @@ app.post('/search', (req, res) => {
           res.json({success: false})
         } else {
           console.log('document placed in right directory and updated')
-          res.json({success: true});
         }
       })
+      res.redirect(`/editDoc/${doc._id}`);
     }
   })
 })

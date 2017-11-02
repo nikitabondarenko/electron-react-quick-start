@@ -1,15 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
-// import router from '../backend/server';
 import axios from 'axios';
 
 import DocBox from './DocBox'
 
 const inlineStyle3 = {
     'border': 'solid',
-    // 'borderRadius': 30,
     'flex': 1,
     'padding': 25,
     'display': 'flex',
@@ -24,6 +21,7 @@ class Home extends React.Component {
         super(props);
         this.state = {
             addDoc: '',
+            newDocTitle: '',
             user: {
                 firstName: '',
                 lastName: '',
@@ -44,8 +42,7 @@ class Home extends React.Component {
 
     getSharedDocExec(resp){
         if (resp.data.success){
-            console.log('document added');
-            return this.props.history.push("/editDoc");
+            return this.props.history.push(`/editDoc/:${resp.data.document._id}`);
         }
     }
 
@@ -59,20 +56,22 @@ class Home extends React.Component {
 
     logoutExec(resp){
         if (resp.data.success){
-        return this.props.history.push("/login");
+            return this.props.history.push("/login");
         }
     }
 
     newDocExec(resp){
+        console.log('in newDocExec', resp.data)
         if (resp.data.success){
-            console.log("doc created");
-            return this.props.history.push("/editDoc")
+            return this.props.history.push(`/editDoc/:${resp.data.document._id}`)
         }
     }
 
     newDoc(){
         // var title = prompt("What would you like to name your document?", "New Document") 
-        axios.post('http://localhost:3000/makeDoc', {}
+        axios.post('http://localhost:3000/makeDoc', {
+            title: this.state.newDocTitle
+        }
         )
         .then((resp) => (this.newDocExec(resp)))
         .catch(error => console.log('BAD', error));
@@ -99,11 +98,9 @@ class Home extends React.Component {
         )
         .then((resp) => (this.userVerif(resp)))
         .catch(error => console.log('BAD', error));
-        // console.log('these are the other props', this.props)
     }   
 
     componentWillReceiveProps(nextProps){
-        // console.log('these are my props', nextProps)
     }
 
     render() {
@@ -111,13 +108,17 @@ class Home extends React.Component {
             <div style={inlineStyle3}>
                 <h1>Welcome {this.state.user.firstName}</h1>
                 <br/>
-                    <div style={{marginBottom: 10, marginTop: -15}}>
-                        <input type="text" className="form-control" placeholder="Add a document" id="addDoc"
+                    <div style={{'display': 'flex', marginBottom: 30, marginTop: -15, 'flexDirection': 'row'}}>
+                        <input type="text" className="form-control" placeholder="Add a shared document" id="addDoc"
                         value={this.state.addDoc} onChange={(e) => this.handleChange(e)}></input>
-                        <button onClick={() => this.getSharedDoc()} style={{margin: 10}} className="btn btn-primary">Add shared document</button>
+                        <button onClick={() => this.getSharedDoc()} className="btn btn-primary">Add shared document</button>
                     </div>
-                <DocBox docs={this.state.user.documentsOwned} otherDocs={this.state.user.documentsCanEdit} />
-                <button onClick={() => this.newDoc()} className="btn btn-success">Make a new document</button>
+                    <DocBox docs={this.state.user.documentsOwned} otherDocs={this.state.user.documentsCanEdit} />
+                    <div style={{'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center',}}>
+                        <input type="text" className="form-control" placeholder="Add a document" id="newDocTitle"
+                        value={this.state.newDocTitle} onChange={(e) => this.handleChange(e)}></input>
+                        <button onClick={() => this.newDoc()} className="btn btn-success">Make a new document</button>
+                    </div>
                 <button onClick={() => this.logout()} style={{margin: 10}} className="btn btn-danger">Logout</button>
             </div>  
         )

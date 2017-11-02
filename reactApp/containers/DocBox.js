@@ -1,15 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './containers/App';
 import { HashRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
-// import router from '../backend/server';
 import axios from 'axios';
-
-// import Editor from './components/Editor.js';
 
 const inlineStyle4 = {
     'border': 'solid',
-    // 'borderRadius': 30,
     'flex': 1,
     'width': 500,
     'padding': 10,
@@ -32,7 +27,6 @@ class DocBox extends React.Component {
     }
 
     componentWillReceiveProps(props){
-        console.log('these are thre props', props);
         this.setState({userDocs: props.docs, sharedDocs: props.otherDocs});
     }
 
@@ -87,7 +81,7 @@ class DocBox extends React.Component {
                     <ul>
                     {this.state.userDocs.map((testDoc) => {
                         return (
-                        <Link onClick={() => props.history.push(`editDoc/:${testDoc}`)} to={'/editDoc'} key={testDoc._id}><li>{testDoc.title}</li></Link>
+                        <Link to={`/editDoc/${testDoc._id}`} key={testDoc._id}><li>{testDoc.title}</li></Link>
                         )
                     })}
                     </ul>
@@ -97,7 +91,7 @@ class DocBox extends React.Component {
                     <ul>
                     {this.state.sharedDocs.map((testDoc) => {
                         return (
-                        <Link onClick={() => props.history.push(`editDoc/:${testDoc}`)} to={'/editDoc'} key={testDoc._id}><li>{testDoc.title}</li></Link>
+                        <Link to={`/editDoc/${testDoc._id}`} key={testDoc._id}><li>{testDoc.title}</li></Link>
                         )
                     })}
                     </ul>

@@ -1,5 +1,5 @@
 var React = require('react');
-import {Editor, EditorState, RichUtils, DefaultDraftBlockRenderMap, convertToRaw} from 'draft-js';
+import {Editor, EditorState, RichUtils, DefaultDraftBlockRenderMap, convertToRaw, convertFromRaw} from 'draft-js';
 import editorStyles from '../styles/editorStyles';
 import {Glyphicon} from 'react-bootstrap';
 var FontAwesome = require('react-fontawesome');
@@ -9,6 +9,7 @@ import FontIcon from 'material-ui/FontIcon';
 import {Popover} from 'material-ui/Popover';
 import {Map} from 'immutable'
 import axios from 'axios';
+import Mousetrap from 'mousetrap';
 
 const myBlockTypes = DefaultDraftBlockRenderMap.merge(new Map({
   'center': {
@@ -30,6 +31,7 @@ class MyEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      title: 'cheese',
       editorState: EditorState.createEmpty(),
       DocID: '',
       inlineStyles: {},
@@ -161,6 +163,10 @@ class MyEditor extends React.Component {
     );
   }
 
+  // Mousetrap.bind('command+s', () => { _saveButtonClick() })
+  // window.addEventListener('keyup', _saveButtonClick(), true)
+  
+
   _saveButtonClick() {
     console.log('in save button click', this.state.editorState)
     if(this.state.editorState){
@@ -181,12 +187,25 @@ class MyEditor extends React.Component {
   }
 
   getDocInfo(resp){
-    console.log('logged data', resp.data)
+    if (resp.data.document.rawText.trim().length < 1){
+      this.setState({
+        title: resp.data.document.title,
+        DocID: resp.data.document._id,
+      })
+    } else { 
+      var newText = (convertFromRaw(JSON.parse(resp.data.document.rawText)))
+      console.log('this is newText', newText)
+      this.setState({
+      title: resp.data.document.title,
+      editorState: EditorState.createWithContent(newText),
+      DocID: resp.data.document._id,
+      })
+    }
+    console.log(this.state)
   }
 
   componentDidMount() {
-    // console.log(cheatingVar)
-    axios.get('http://localhost:3000/editDoc/:Doc', {}
+    axios.get(`http://localhost:3000/editDoc/${this.props.match.params.docId}`, {}
     )
     .then((resp) => (this.getDocInfo(resp)))
     .catch(error => console.log('BAD', error));
@@ -206,11 +225,11 @@ class MyEditor extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{padding: 25}}>
         <button onClick={() => this.goBack()}>Back to Documents Portal</button>
-        <h2>Sample Document</h2>
+        <h2>{this.state.title}</h2>
         <p>Shareable Document ID: {this.state.DocID}</p>
-        <button onClick={() => this._saveButtonClick()}>Save Changes</button>
+        { /* <button onClick={() => this._saveButtonClick()}>Save Changes</button> */}
         <br>
         </br>
         <div>
@@ -228,7 +247,11 @@ class MyEditor extends React.Component {
           {this.generateButton({icon: 'format_align_center', style: 'center', block: true})}
           {this.generateButton({icon: 'format_list_bulleted', style: 'unordered-list-item', block: true})}
           {this.generateButton({icon: 'format_list_numbered', style: 'ordered-list-item', block: true})}
-          {this.generateButton({icon: 'save'})}
+          <FlatButton
+          onMouseDown={() => this._saveButtonClick()}
+          style={{minWidth: '40px'}}
+          icon={<FontIcon className='material-icons'>{'save'}</FontIcon>}
+        />
           {/* <SketchPicker/> */}
         </center>
         </div>
