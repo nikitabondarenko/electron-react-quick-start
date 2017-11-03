@@ -23,11 +23,13 @@ var userSchema = new Schema({
       type: String,
     },
     documentsOwned: {
-      type: Array, //array of document id's that User has created
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}],
+      //array of refernces to document id's that User has created
       require: true
     },
     documentsCanEdit: {
-      type: Array, //array of document id's that have been shared with User
+      type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Document'}], 
+      //array of references to document id's that have been shared with User
       require: true
     }
   });
@@ -58,4 +60,3 @@ var userSchema = new Schema({
     User: User,
     Document: Document
   };
-  

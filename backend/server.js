@@ -1,5 +1,5 @@
 const express = require('express');
-// var exphbs = require('express-handlebars'); 
+// var exphbs = require('express-handlebars');
 var path = require('path');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -49,9 +49,12 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
+  User.findById(id)
+  .populate('documentsOwned')
+  .populate('documentsCanEdit')
+  .exec(function(err, user) {
       done(err, user);
-    });
+    })
 });
 
 // passport strategy;
@@ -61,7 +64,10 @@ passport.use(new LocalStrategy(function(username, password, done) {
       return;
     }
   // find the user with the given username
-  User.findOne({ username: username, password: password }, function (err, user) {
+  User.findOne({ username: username, password: password })
+  .populate('documentsOwned')
+  .populate('documentsCanEdit')
+  .exec(function (err, user) {
       if (err) {
         done(err);
         return;
@@ -72,7 +78,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
       }
 
       done(null, user);
-    });
+    })
 }));
 
 var validateReq = function(userData) {
@@ -161,7 +167,7 @@ app.post('/makeDoc', (req, res) => {
       console.log(err);
       res.json({success: false});
     } else {
-      req.user.documentsOwned.push(doc);
+      req.user.documentsOwned.push(doc._id);
       req.user.save((err) =>{
         if (err){
           console.log('there was an error', err);
@@ -192,8 +198,8 @@ app.post('/search', (req, res) => {
       console.log('there was an error', err);
     } else {
       doc.sharedWith.push(req.user._id)
-      req.user.documentsCanEdit.push(doc);
-      
+      req.user.documentsCanEdit.push(doc._id);
+
       req.user.save((err) =>{
         if (err){
           console.log('there was an error', err);
@@ -211,6 +217,17 @@ app.post('/search', (req, res) => {
         }
       })
       res.json({success: true, documentInfo: doc});
+    }
+  })
+})
+
+app.post('/updateTitle', (req, res) =>{
+  console.log(req.body)
+  Document.update({_id: req.body.id },{$set: {title: req.body.newTitle}}, (err, result) => {
+    if (err){
+      res.send('did not update title', err)
+    }else {
+      res.send("title updated")
     }
   })
 })
