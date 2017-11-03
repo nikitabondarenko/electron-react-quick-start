@@ -6,11 +6,14 @@ const LocalStrategy = require('passport-local');
 const util = require('util');
 const { User, Document } = require('../models/models');
 const mongoose = require('mongoose');
+const app = express();
+const server = require('http').Server(app)
+var io = require('socket.io')(server);
 
 mongoose.connect(process.env.MONGODB_URI)
 
 
-const app = express();
+
 // Example route
 
 app.get('/', function (req, res) {
@@ -138,7 +141,7 @@ app.get('/home', (req, res) => {
 
 
 app.post('/saveFile', (req, res) => {
-  Document.update({_id: req.body.id },{$set: {rawText: req.body.content}}, (err, result) => {
+  Document.findByIdAndUpdate({_id: req.body.id },{$set: {rawText: req.body.content}}, (err, result) => {
     if (err){
       res.send('did not update model', err)
     }else {
@@ -215,12 +218,19 @@ app.post('/search', (req, res) => {
   })
 })
 
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('change', (data) => {
+    socket.broadcast.emit('globalChange', data);
+  });
+});
+
 app.get('/logout', (req, res, next) => {
   req.logout();
   res.json({success: true});
 });
 
 
-app.listen(3000, function () {
+server.listen(3000, function () {
   console.log('Backend server for Electron App running on port 3000!');
 });

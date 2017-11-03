@@ -10,6 +10,7 @@ import {Popover} from 'material-ui/Popover';
 import {Map} from 'immutable'
 import axios from 'axios';
 import Mousetrap from 'mousetrap';
+import io from 'socket.io-client';
 
 const myBlockTypes = DefaultDraftBlockRenderMap.merge(new Map({
   'center': {
@@ -40,8 +41,16 @@ class MyEditor extends React.Component {
     };
 
     this.focus = () => this.refs.editor.focus();
-    this.onChange = (editorState) => this.setState({editorState});
+    
+}
+
+  onChange(editorState) {
+    const contentState = editorState.getCurrentContent();
+    const stringContent = JSON.stringify(convertToRaw(contentState));
+    this.socket.emit(('change', stringContent));
+    this.setState({editorState})
   }
+
   _onToggleClick(e, style, block) {
     e.preventDefault();
     if(block){
@@ -206,10 +215,33 @@ class MyEditor extends React.Component {
     console.log(this.state)
   }
 
+  // onChange(editorState){
+  //   const contentState = editorState.getCurrentContent();
+  //   const stringContent = JSON.stringify(convertToRaw(contentState));
+  //   this.socket.emit(('change', stringContent));
+  //   this.setState({
+  //     editorState
+  //   })
+  // }
+
   componentDidMount() {
+    this.socket = io('http://localhost:3000/');
+    this.socket.on('connect', () => {
+      console.log('connected');
+    });
+      
+    this.socket.on('globalChange', (data) => {
+      const rawContentState = JSON.parse(data);
+      const contentState = convertFromRaw(rawContentState);
+      const newEditorState = EditorState.createWithContent(contentState);
+      this.setState({
+        editorState: newEditorState
+      });
+    });
+
     Mousetrap.bind(['command+s', 'ctrl+s'], () => { this._saveButtonClick() })
 
-    window.addEventListener('keyup', () => this._saveButtonClick(), true)
+    // window.addEventListener('keyup', () => this._saveButtonClick(), true)
 
     axios.get(`http://localhost:3000/editDoc/${this.props.match.params.docId}`, {}
     )
@@ -270,7 +302,7 @@ class MyEditor extends React.Component {
               className='testEditor'
               customStyleMap={this.state.inlineStyles}
               editorState={this.state.editorState}
-              onChange={this.onChange} />
+              onChange={this.onChange.bind(this)} />
           </div>
         </div>
       </div>
