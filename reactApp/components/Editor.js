@@ -176,7 +176,7 @@ class MyEditor extends React.Component {
       </div>
     );
   }
-  
+
 
   _saveButtonClick() {
     console.log('in save button click', this.state.editorState)
@@ -203,7 +203,7 @@ class MyEditor extends React.Component {
         title: resp.data.document.title,
         DocID: resp.data.document._id,
       })
-    } else { 
+    } else {
       var newText = (convertFromRaw(JSON.parse(resp.data.document.rawText)))
       console.log('this is newText', newText)
       this.setState({
@@ -259,13 +259,22 @@ class MyEditor extends React.Component {
   // .then((resp) => (this.userVerif(resp)))
   // .catch(error => console.log('BAD', error));
   // }
+  changeTitle(e){
+    this.setState({title: e.target.value})
+  }
+  updateTitle(){
+    console.log("title: ", this.state.title)
+    axios.post('http://localhost:3000/updateTitle',
+     {newTitle: this.state.title, id: this.state.DocID})
+  }
 
 
   render() {
     return (
       <div style={{padding: 25}}>
-        <button onClick={() => this.goBack()}>Back to Documents Portal</button>
-        <h2>{this.state.title}</h2>
+        <button onClick={() => this.goBack()}>Back to Documents Portal</button><br></br>
+        <input value = {this.state.title} onChange={(e) => this.changeTitle(e)}>
+        </input><button onClick={() =>this.updateTitle()}>Change Title</button>
         <p>Shareable Document ID: {this.state.DocID}</p>
         { /* <button onClick={() => this._saveButtonClick()}>Save Changes</button> */}
         <br>
