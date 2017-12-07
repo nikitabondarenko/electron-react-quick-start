@@ -1,0 +1,6 @@
+Collaborative Text Editor
+
+• Created a collaborative text editor application with Electron in a team of 3 utilizing Git and GitHub
+• Utilized Webpack to package a single-page React application
+• Implemented client-side rendering with React Router and a rich text editor using contentEditable from Facebook's draftJS
+• Built stand-alone JSON API backend with MongoDB, Passport and Express
